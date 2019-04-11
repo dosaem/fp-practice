@@ -1,21 +1,102 @@
 const _ = Symbol("parameter");
 const ___ = Symbol("rest parameters");
 
-const map = function() {};
+const reduce = function(f, acc, iter) {
+  if (!iter) {
+    iter = acc[Symbol.iterator]();
+    acc = iter.next().value;
+  }
+  for (const item of iter) {
+    acc = f(acc, item);
+  }
+  return acc;
+};
 
-const filter = function() {};
+// const map = function(f, iter) {
+//   const res = [];
+//   for (const item of iter) {
+//     res.push(f(item));
+//   }
+//   return res;
+// };
 
-const reduce = function() {};
+const map = (f, iter) => reduce((acc, i) => (acc.push(f(i)), acc), [], iter);
 
-const groupBy = function() {};
+// const filter = function(f, iter) {
+//   const res = [];
+//   for (const item of iter) {
+//     if (f(item)) res.push(item);
+//   }
+//   return res;
+// };
 
-const countBy = function() {};
+const filter = (f, iter) =>
+  reduce((acc, i) => (f(i) && acc.push(i), acc), [], iter);
 
-const indexBy = function() {};
+// const groupBy = function(f, iter) {
+//   const res = {};
+//   for (const i of iter) {
+//     if (res[f(i)]) {
+//       res[f(i)].push(i);
+//     } else res[f(i)] = [i];
+//   }
+//   return res;
+// };
 
-const pipe = function() {};
+const groupBy = (f, iter) =>
+  reduce(
+    (res, i) => (res[f(i)] ? res[f(i)].push(i) : (res[f(i)] = [i]), res),
+    {},
+    iter
+  );
 
-const go = function() {};
+// const countBy = function(f, iter) {
+//   const res = {};
+//   for (const i of iter) {
+//     if (res[f(i)]) {
+//       res[f(i)] += 1;
+//     } else {
+//       res[f(i)] = 1;
+//     }
+//   }
+//   return res;
+// };
+
+const countBy = (f, iter) =>
+  reduce(
+    (res, i) => (res[f(i)] ? res[f(i)]++ : (res[f(i)] = 1), res),
+    {},
+    iter
+  );
+
+// const indexBy = function(f, iter) {
+//   const res = {};
+//   for (const i of iter) {
+//     res[f(i)] = i;
+//   }
+//   return res;
+// };
+
+const indexBy = (f, iter) =>
+  reduce((res, i) => ((res[f(i)] = i), res), {}, iter);
+
+const pipe = function(...fs) {
+  return function(...acc) {
+    let init = fs[0](...acc);
+    for (let i = 1; i < fs.length; i++) {
+      init = fs[i](init);
+    }
+    return init;
+  };
+};
+
+const go = function(...args) {
+  let a = args[0];
+  for (let i = 1; i < args.length; i++) {
+    a = args[i](a);
+  }
+  return a;
+};
 
 const curry = function() {};
 
@@ -33,5 +114,5 @@ export {
   curry,
   partial,
   _,
-  ___,
-}
+  ___
+};
