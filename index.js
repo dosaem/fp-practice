@@ -80,23 +80,30 @@ const countBy = (f, iter) =>
 const indexBy = (f, iter) =>
   reduce((res, i) => ((res[f(i)] = i), res), {}, iter);
 
-const pipe = function(...fs) {
-  return function(...acc) {
-    let init = fs[0](...acc);
-    for (let i = 1; i < fs.length; i++) {
-      init = fs[i](init);
-    }
-    return init;
-  };
-};
+// const pipe = function(...fs) {
+//   return function(...acc) {
+//     let init = fs[0](...acc);
+//     for (let i = 1; i < fs.length; i++) {
+//       init = fs[i](init);
+//     }
+//     return init;
+//   };
+// };
 
-const go = function(...args) {
-  let a = args[0];
-  for (let i = 1; i < args.length; i++) {
-    a = args[i](a);
-  }
-  return a;
-};
+// const pipe = (f1, ...fs) => (...acc) =>
+//   reduce((acc, f) => f(acc), f1(...acc), fs);
+
+// const go = function(...args) {
+//   let a = args[0];
+//   for (let i = 1; i < args.length; i++) {
+//     a = args[i](a);
+//   }
+//   return a;
+// };
+
+const go = (...args) => reduce((acc, f) => f(acc), args);
+
+const pipe = (f1, ...fs) => (...acc) => go(f1(...acc), ...fs);
 
 const curry = function() {};
 
